@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(".");
 const dist = join(root, "dist");
-const files = ["index.html", "styles.css", "script.js", "assets"];
+const files = ["index.html", "styles.css", "script.js", "assets", "sitemap.xml", "robots.txt", "CNAME"];
 
 if (existsSync(dist)) {
   rmSync(dist, { recursive: true, force: true });
