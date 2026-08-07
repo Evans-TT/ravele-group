@@ -128,6 +128,8 @@ const lightboxType = document.querySelector("[data-lightbox-type]");
 const lightboxDescription = document.querySelector("[data-lightbox-description]");
 const lightboxClose = document.querySelector("[data-lightbox-close]");
 const contactForm = document.querySelector("[data-contact-form]");
+const womensModal = document.querySelector("[data-womens-modal]");
+const womensCloseButtons = [...document.querySelectorAll("[data-womens-close]")];
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -147,6 +149,8 @@ function updateScrollState() {
 }
 
 function renderProducts(items) {
+  if (!grid) return;
+
   grid.innerHTML = items
     .map(
       (item, index) => `
@@ -181,6 +185,8 @@ function setFilter(filter) {
 }
 
 function openLightbox(index) {
+  if (!lightbox) return;
+
   const item = products[index];
   if (!item) return;
 
@@ -195,6 +201,8 @@ function openLightbox(index) {
 }
 
 function closeLightbox() {
+  if (!lightbox) return;
+
   lightbox.hidden = true;
   body.classList.remove("lightbox-open");
   lightboxImage.src = "";
@@ -300,6 +308,8 @@ function setupCardTilt() {
 }
 
 function setupContactForm() {
+  if (!contactForm) return;
+
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(contactForm);
@@ -316,40 +326,66 @@ function setupContactForm() {
   });
 }
 
-navToggle.addEventListener("click", () => {
-  const open = !body.classList.contains("nav-open");
-  body.classList.toggle("nav-open", open);
-  navToggle.setAttribute("aria-expanded", String(open));
-  navToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
-});
+function openWomensModal() {
+  if (!womensModal) return;
+  womensModal.hidden = false;
+  body.classList.add("promo-open");
+  womensModal.querySelector(".promo-modal__close")?.focus();
+}
 
-nav.addEventListener("click", (event) => {
-  if (!(event.target instanceof HTMLAnchorElement)) return;
-  body.classList.remove("nav-open");
-  navToggle.setAttribute("aria-expanded", "false");
-  navToggle.setAttribute("aria-label", "Open navigation");
-});
+function closeWomensModal() {
+  if (!womensModal) return;
+  womensModal.hidden = true;
+  body.classList.remove("promo-open");
+}
+
+function setupWomensModal() {
+  if (!womensModal) return;
+  womensCloseButtons.forEach((button) => button.addEventListener("click", closeWomensModal));
+  window.setTimeout(openWomensModal, reduceMotion ? 250 : 1250);
+}
+
+if (navToggle) {
+  navToggle.addEventListener("click", () => {
+    const open = !body.classList.contains("nav-open");
+    body.classList.toggle("nav-open", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+    navToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  });
+}
+
+if (nav) {
+  nav.addEventListener("click", (event) => {
+    if (!(event.target instanceof HTMLAnchorElement)) return;
+    body.classList.remove("nav-open");
+    navToggle?.setAttribute("aria-expanded", "false");
+    navToggle?.setAttribute("aria-label", "Open navigation");
+  });
+}
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => setFilter(button.dataset.filter));
 });
 
-grid.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-product-index]");
-  if (!button) return;
-  openLightbox(Number(button.dataset.productIndex));
-});
+if (grid) {
+  grid.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-product-index]");
+    if (!button) return;
+    openLightbox(Number(button.dataset.productIndex));
+  });
+}
 
-lightboxClose.addEventListener("click", closeLightbox);
-lightbox.addEventListener("click", (event) => {
+lightboxClose?.addEventListener("click", closeLightbox);
+lightbox?.addEventListener("click", (event) => {
   if (event.target === lightbox) closeLightbox();
 });
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     body.classList.remove("nav-open");
-    navToggle.setAttribute("aria-expanded", "false");
-    if (!lightbox.hidden) closeLightbox();
+    navToggle?.setAttribute("aria-expanded", "false");
+    if (lightbox && !lightbox.hidden) closeLightbox();
+    if (womensModal && !womensModal.hidden) closeWomensModal();
   }
 });
 
@@ -361,4 +397,5 @@ observeReveals();
 animateCounters();
 setupActiveNav();
 setupContactForm();
+setupWomensModal();
 updateScrollState();

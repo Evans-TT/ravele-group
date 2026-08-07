@@ -8,7 +8,7 @@
     "dev": "node scripts/dev-server.mjs",
     "build": "node scripts/build.mjs",
     "preview": "node scripts/dev-server.mjs dist 4173",
-    "zip": "npm run build && zip -r Ravele-Royal-Farming-Website.zip index.html styles.css script.js package.json README.md scripts assets dist"
+    "zip": "npm run build && zip -r Ravele-Royal-Farming-Website.zip index.html articles.html styles.css script.js package.json README.md scripts assets sitemap.xml robots.txt CNAME dist"
   },
   "keywords": [
     "ravele",
