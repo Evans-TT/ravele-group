@@ -270,8 +270,12 @@ function animateCounters() {
 function setupActiveNav() {
   const links = [...document.querySelectorAll(".nav-links a")];
   const sections = links
-    .map((link) => document.querySelector(link.getAttribute("href")))
+    .map((link) => link.getAttribute("href"))
+    .filter((href) => href && href.startsWith("#"))
+    .map((href) => document.querySelector(href))
     .filter(Boolean);
+
+  if (!sections.length) return;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -341,6 +345,8 @@ function closeWomensModal() {
 
 function setupWomensModal() {
   if (!womensModal) return;
+  const womensMonthEnd = new Date("2026-09-01T00:00:00+02:00").getTime();
+  if (Date.now() >= womensMonthEnd) return;
   womensCloseButtons.forEach((button) => button.addEventListener("click", closeWomensModal));
   window.setTimeout(openWomensModal, reduceMotion ? 250 : 1250);
 }
